@@ -1,4 +1,7 @@
-# depressed-cloud-music
+# DepressedCloudMusic
+## 接口来源
+
+[网易云音乐 API](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
 ## Project setup
 ```
@@ -22,3 +25,7 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## License
+
+[The MIT License (MIT)](https://github.com/Hayden0323/DepressedCloudMusic/blob/master/LICENSE)
