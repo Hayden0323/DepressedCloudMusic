@@ -10,10 +10,10 @@ module.exports = {
   productionSourceMap: false,
 
   devServer: {
-    port: 4000
+    port: 4000,
   },
 
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.resolve.alias
       .set('@', path.resolve('src'))
       .set('assets', path.resolve('src/assets'))
@@ -28,10 +28,10 @@ module.exports = {
           new CompressionPlugin({
             test: /\.js$|\.html$|\.css/, // 对识别到的文件进行压缩
             threshold: 10240, // 对超过10k的数据压缩
-            deleteOriginalAssets: false // 不删除源文件，如果nginx开启了gzip可以删除
-          })
-        ]
+            deleteOriginalAssets: false, // 不删除源文件，如果nginx开启了gzip可以删除
+          }),
+        ],
       }
     }
-  }
+  },
 }
