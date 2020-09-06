@@ -1,17 +1,19 @@
 <template>
-  <div
-    class="app-bar w-screen h-16 bg-yellow-500 flex justify-center items-center"
-  >
+  <div class="app-bar w-screen h-16 bg-gray-800 flex justify-center items-center">
     <logo />
+    <item />
   </div>
 </template>
 
 <script>
 import Logo from './Logo'
+import Item from './AppbarItem'
+
 export default {
   components: {
-    Logo
-  }
+    Logo,
+    Item,
+  },
 }
 </script>
 
