@@ -12,8 +12,8 @@ import AppMain from './components/AppMain'
 export default {
   components: {
     Appbar,
-    AppMain,
-  },
+    AppMain
+  }
 }
 </script>
 

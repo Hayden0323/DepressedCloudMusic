@@ -10,7 +10,8 @@
         <router-link
           :to="item.link"
           class="h-full flex items-center px-6 hover:bg-black text-sm font-medium text-gray-300"
-        >{{ item.name }}</router-link>
+          >{{ item.name }}</router-link
+        >
       </li>
     </ul>
   </div>
@@ -26,9 +27,9 @@ export default {
         { index: 2, name: '朋友', link: '/' },
         { index: 3, name: '商城', link: '/' },
         { index: 4, name: '音乐人', link: '/' },
-        { index: 5, name: '下载客户端', link: '/' },
+        { index: 5, name: '下载客户端', link: '/' }
       ],
-      activeIndex: 0,
+      activeIndex: 0
     }
   },
   methods: {
@@ -37,8 +38,8 @@ export default {
     },
     isActive(index) {
       return this.activeIndex === index
-    },
-  },
+    }
+  }
 }
 </script>
 

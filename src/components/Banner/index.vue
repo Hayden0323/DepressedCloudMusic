@@ -1,21 +1,12 @@
 <template>
   <div class="banner-container w-screen bg-gray-300">
     <div class="around">
-      <img
-        class="prev"
-        :src="prevImg"
-      />
-      <img
-        class="next"
-        :src="nextImg"
-      />
+      <img class="prev" :src="prevImg" />
+      <img class="next" :src="nextImg" />
     </div>
     <div class="slider relative w-32 h-4">
       <ul>
-        <li
-          v-for="(item, index) in slider"
-          :key="index"
-        >
+        <li v-for="(item, index) in slider" :key="index">
           <img :src="item.imageUrl ? item.imageUrl : ''" />
         </li>
       </ul>
@@ -32,7 +23,7 @@ export default {
   data() {
     return {
       slider: [],
-      imgIndex: 0,
+      imgIndex: 0
     }
   },
   computed: {
@@ -53,21 +44,20 @@ export default {
       } else {
         return this.slider[this.imgIndex + 1].imageUrl
       }
-    },
+    }
   },
   created() {
     this.getBanner()
   },
   methods: {
     getBanner() {
-      getBanner().then((res) => {
+      getBanner().then(res => {
         this.slider = res.banners
         console.log(this.slider)
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
-<style>
-</style>
+<style></style>
