@@ -1,33 +1,34 @@
 <template>
-    <div class="banner-container w-screen bg-gray-300">
-        <div class="around cursor-pointer">
-            <img
-                class="prev absolute rounded-l"
-                :src="prevImg"
-                @click="handlePrev"
-            />
-            <img
-                class="next absolute rounded-r"
-                :src="nextImg"
-                @click="handleNext"
-            />
-        </div>
-        <div class="slider relative overflow-hidden my-0 mx-auto">
+    <div class="banner-container w-screen">
+        <div class="slider relative my-0 mx-auto flex justify-start">
             <ul
-                class=".absolute p-0"
+                class="absolute p-0 flex"
                 :style="{ width: `${slider.length * 800}px` }"
             >
                 <li
+                    ref="imgs"
                     v-for="(item, index) in slider"
                     :key="index"
                     :style="{
                         transform: `translate3d(-${imgIndex * 100}%, 0, 0)`
                     }"
-                    class="float-left"
+                    :class="[
+                        isAnimating
+                            ? 'transition duration-500 ease-linear'
+                            : null
+                    ]"
                 >
                     <img
                         :src="item.imageUrl ? item.imageUrl : ''"
-                        class="rounded"
+                        :class="[
+                            'current',
+                            'rounded',
+                            'shadow-xl',
+                            isAnimating
+                                ? 'transition duration-500 ease-linear'
+                                : null
+                        ]"
+                        :style="[imgStyle(index)]"
                     />
                 </li>
             </ul>
@@ -36,10 +37,10 @@
             class="pointer flex justify-center text-2xl leading-7 cursor-pointer transform -translate-y-8 h-0"
         >
             <li
-                v-for="(item, index) in slider"
+                v-for="index in pointers"
                 :key="index"
                 :style="{ color: index === imgIndex ? 'orange' : null }"
-                @click="imgIndex = index"
+                @click="pointerClick(index)"
             ></li>
         </div>
     </div>
@@ -53,28 +54,10 @@ export default {
     data() {
         return {
             slider: [],
-            imgIndex: 0,
-            interval: null
-        }
-    },
-    computed: {
-        prevImg() {
-            const len = this.slider.length
-            if (len == 0) return ''
-            if (this.imgIndex === 0) {
-                return this.slider[len - 1].imageUrl
-            } else {
-                return this.slider[this.imgIndex - 1].imageUrl
-            }
-        },
-        nextImg() {
-            const len = this.slider.length
-            if (len == 0) return ''
-            if (this.imgIndex === len - 1) {
-                return this.slider[0].imageUrl
-            } else {
-                return this.slider[this.imgIndex + 1].imageUrl
-            }
+            pointers: [],
+            imgIndex: 2,
+            interval: null,
+            isAnimating: true
         }
     },
     created() {
@@ -83,58 +66,98 @@ export default {
     methods: {
         getBanner() {
             getBanner().then(res => {
-                this.slider = res.banners
-                this.resetInterval()
+                this.init(res)
             })
         },
         handlePrev() {
             this.resetInterval()
-            this.imgIndex === 0
-                ? (this.imgIndex = this.slider.length - 1)
-                : this.imgIndex--
+            if (this.imgIndex === 0) {
+                this.imgIndex = this.slider.length - 2
+            } else {
+                this.imgIndex--
+            }
         },
         handleNext() {
             this.resetInterval()
-            this.imgIndex === this.slider.length - 1
-                ? (this.imgIndex = 0)
-                : this.imgIndex++
+            if (this.imgIndex === this.slider.length - 1) {
+                this.imgIndex = 1
+            } else {
+                this.imgIndex++
+            }
         },
         resetInterval() {
-            if (this.interval) clearInterval(this.interval)
+            clearInterval(this.interval)
             this.interval = setInterval(() => {
                 this.handleNext()
             }, 5000)
+        },
+        pointerClick(index) {
+            this.resetInterval()
+            this.imgIndex = index
+        },
+        imgStyle(index) {
+            let rotate = 'rotateY(0deg)'
+            let scale = 'scale(1, 1)'
+            if (index < this.imgIndex) {
+                rotate = 'rotateY(-4deg)'
+                scale = 'scale(0.85, 0.85)'
+            }
+            if (index > this.imgIndex) {
+                rotate = 'rotateY(4deg)'
+                scale = 'scale(0.85, 0.85)'
+            }
+            return {
+                zIndex: index === this.imgIndex ? 2 : 1,
+                transform: `${rotate} ${scale}`
+            }
+        },
+        init(res) {
+            const banners = [...res.banners]
+            const len = banners.length
+            for (let i = 0; i < len; i++) {
+                this.pointers.push(i + 2)
+            }
+            const prevImgs = [banners[0], banners[1]]
+            const lastImgs = [banners[len - 2], banners[len - 1]]
+            this.slider = lastImgs.concat(...res.banners).concat(prevImgs)
+            this.resetInterval()
+            this.$nextTick(() => {
+                this.$refs.imgs.forEach(img => {
+                    img.addEventListener('transitionend', () => {
+                        if (this.imgIndex === this.slider.length - 2) {
+                            this.isAnimating = false
+                            this.imgIndex = 2
+                            setTimeout(() => {
+                                this.isAnimating = true
+                            }, 0)
+                        } else if (this.imgIndex === 1) {
+                            this.isAnimating = false
+                            this.imgIndex = this.slider.length - 3
+                            setTimeout(() => {
+                                this.isAnimating = true
+                            }, 0)
+                        }
+                    })
+                })
+            })
         }
     },
     beforeDestroy() {
         clearInterval(this.interval)
-        this.interval = null
     }
 }
 </script>
 
 <style lang="less" scoped>
-.around {
-    perspective: 200;
-    -webkit-perspective: 200;
-    .prev {
-        height: 188px;
-        left: 300px;
-        top: 35px;
-        transform: rotateY(7deg);
-    }
-    .next {
-        height: 188px;
-        right: 300px;
-        top: 35px;
-        transform: rotateY(-7deg);
-    }
-}
 .slider {
     width: 800px;
     height: 300px;
     ul {
-        img {
+        li {
+            perspective: 200;
+            -webkit-perspective: 200;
+        }
+        .current {
             width: 800px;
             height: 300px;
         }
