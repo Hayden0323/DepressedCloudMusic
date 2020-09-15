@@ -10,8 +10,7 @@
         <router-link
           :to="item.link"
           class="h-full flex items-center px-6 hover:bg-black text-sm font-medium text-gray-300"
-          >{{ item.name }}</router-link
-        >
+        >{{ item.name }}</router-link>
       </li>
     </ul>
   </div>

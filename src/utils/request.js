@@ -23,8 +23,8 @@ service.interceptors.response.use(
     }
   },
   err => {
-    console.log('err' + error)
-    return Promise.reject(error)
+    console.log('err' + err)
+    return Promise.reject(err)
   }
 )
 
