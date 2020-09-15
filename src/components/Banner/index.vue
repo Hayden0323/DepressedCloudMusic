@@ -95,6 +95,7 @@ export default {
     imgStyle(index) {
       let rotate = 'rotateY(0deg)'
       let scale = 'scale(1, 1)'
+
       if (index < this.imgIndex) {
         rotate = 'rotateY(-4deg)'
         scale = 'scale(0.85, 0.85)'
@@ -111,25 +112,31 @@ export default {
     init(res) {
       const banners = [...res.banners]
       const len = banners.length
+
       for (let i = 0; i < len; i++) {
         this.pointers.push(i + 2)
       }
+
       const prevImgs = [banners[0], banners[1]]
       const lastImgs = [banners[len - 2], banners[len - 1]]
+
       this.slider = lastImgs.concat(...res.banners).concat(prevImgs)
       this.resetInterval()
+
       this.$nextTick(() => {
         this.$refs.imgs.forEach(img => {
           img.addEventListener('transitionend', () => {
             if (this.imgIndex === this.slider.length - 2) {
               this.isAnimating = false
               this.imgIndex = 2
+
               setTimeout(() => {
                 this.isAnimating = true
               }, 0)
             } else if (this.imgIndex === 1) {
               this.isAnimating = false
               this.imgIndex = this.slider.length - 3
+
               setTimeout(() => {
                 this.isAnimating = true
               }, 0)
