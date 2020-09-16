@@ -94,15 +94,15 @@ export default {
     },
     imgStyle(index) {
       let rotate = 'rotateY(0deg)'
-      let scale = 'scale(1, 1)'
+      let scale = 'scale3d(1, 1, 1)'
 
       if (index < this.imgIndex) {
         rotate = 'rotateY(-4deg)'
-        scale = 'scale(0.85, 0.85)'
+        scale = 'scale3d(0.85, 0.85, 1)'
       }
       if (index > this.imgIndex) {
         rotate = 'rotateY(4deg)'
-        scale = 'scale(0.85, 0.85)'
+        scale = 'scale3d(0.85, 0.85, 1)'
       }
       return {
         zIndex: index === this.imgIndex ? 2 : 1,

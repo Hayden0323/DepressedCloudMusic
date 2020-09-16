@@ -2,10 +2,10 @@
   <div class="appbar-item h-full">
     <ul class="h-full flex flex-row">
       <li
-        v-for="item in items"
-        :key="item.name"
-        :class="isActive(item.index) ? 'bg-black' : null"
-        @click="handleActiveItem(item.index)"
+        v-for="(item, index) in items"
+        :key="index"
+        :class="isActive(index) ? 'bg-black' : null"
+        @click="handleActiveItem(index)"
       >
         <router-link
           :to="item.link"
@@ -21,12 +21,12 @@ export default {
   data() {
     return {
       items: [
-        { index: 0, name: '发现音乐', link: '/' },
-        { index: 1, name: '我的音乐', link: '/' },
-        { index: 2, name: '朋友', link: '/' },
-        { index: 3, name: '商城', link: '/' },
-        { index: 4, name: '音乐人', link: '/' },
-        { index: 5, name: '下载客户端', link: '/' }
+        { name: '发现音乐', link: '/' },
+        { name: '我的音乐', link: '/my' },
+        { name: '朋友', link: '/' },
+        { name: '商城', link: '/' },
+        { name: '音乐人', link: '/' },
+        { name: '下载客户端', link: '/' }
       ],
       activeIndex: 0
     }
