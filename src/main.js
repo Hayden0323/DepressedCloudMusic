@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 
 import './assets/styles/tailwind.less'
+import 'font-awesome/css/font-awesome.min.css'
 
 Vue.config.productionTip = false
 
