@@ -1,6 +1,6 @@
 <template>
   <div class="home-container">
-    <banner />
+    <banner class="w-2/3" style="height: 300px" />
   </div>
 </template>
 

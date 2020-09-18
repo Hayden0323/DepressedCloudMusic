@@ -1,15 +1,16 @@
 <template>
   <div
-    class="banner relative overflow-x-hidden w-3/4 mx-auto"
+    class="banner relative overflow-x-hidden mx-auto"
     @mouseenter.stop="handleMouseEnter"
     @mouseleave.stop="handleMouseLeave"
   >
-    <div class="banner__container relative" :style="{height: '300px'}">
+    <div class="banner__container relative h-full">
       <transition name="banner-arrow-left">
         <button
           v-show="hover && (loop || activeIndex > 0)"
           type="button"
           class="left-4"
+          style="outline: none"
           :class="bannerArrowClasses"
           @click.stop="throttledArrowClick(activeIndex - 1)"
         >
@@ -21,6 +22,7 @@
           v-show="hover && (loop || activeIndex < items.length - 1)"
           type="button"
           class="right-4"
+          style="outline: none"
           :class="bannerArrowClasses"
           @click.stop="throttledArrowClick(activeIndex + 1)"
         >
@@ -34,6 +36,21 @@
         class="h-full"
       />
     </div>
+    <ul class="absolute z-20 bottom-0 left-1/2 transform -translate-x-1/2">
+      <li
+        v-for="(item, index) in items"
+        :key="index"
+        class="bg-transparent cursor-pointer inline-block p-1"
+        @mouseenter="throttledIndicatorHover(index)"
+        @click.stop="handleIndicatorClick(index)"
+      >
+        <button
+          class="w-6 h-1 bg-white hover:opacity-75 transition duration-300 outline-none"
+          style="outline: none"
+          :class="bannerButtonClasses(index)"
+        />
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -77,20 +94,19 @@ export default {
   computed: {
     bannerArrowClasses() {
       const classes = [
-        'h-8', 'w-8', 'z-20', 'outline-none', 'cursor-pointer', 'absolute', 'top-1/2', 'transform',
+        'h-8', 'w-8', 'z-20', 'cursor-pointer', 'absolute', 'top-1/2', 'transform',
         'bg-gray-300', '-translate-y-1/2', 'text-center', 'rounded-full', 'transition', 'duration-300',
-        'text-white', 'bg-opacity-25', 'hover:bg-opacity-100'
+        'text-white', 'bg-opacity-25', 'hover:bg-opacity-75', 'outline-none'
       ]
       return classes
     }
   },
 
   watch: {
-    items(val) {
+    children(val) {
       if (val.length > 0) this.setActiveItem(this.initialIndex)
     },
     activeIndex(val, oldVal) {
-      console.log(1)
       this.resetItemPosition(oldVal)
     },
     loop() {
@@ -102,6 +118,9 @@ export default {
     this.getItems()
     this.throttledArrowClick = throttle(300, true, index => {
       this.setActiveItem(index)
+    })
+    this.throttledIndicatorHover = throttle(300, index => {
+      this.handleIndicatorHover(index)
     })
   },
 
@@ -126,9 +145,7 @@ export default {
       })
     },
     updateItems() {
-      // this.children = this.$children.filter(child => child.$options.name === 'BannerItem')
-      this.children = this.$children
-      console.log(this.children)
+      this.children = this.$children.filter(child => child.$options.name === 'BannerItem')
     },
     playSlides() {
       if (this.activeIndex < this.items.length - 1) {
@@ -156,11 +173,12 @@ export default {
       this.startTimer()
     },
     resetItemPosition(oldIndex) {
-      const len = this.children.length
-      console.log(len)
-      this.children.forEach((item, index) => {
-        item.translateItem(index, this.activeIndex, oldIndex)
+      this.children.forEach((child, index) => {
+        child.translateItem(index, this.activeIndex, oldIndex)
       })
+    },
+    bannerButtonClasses(index) {
+      return index === this.activeIndex ? 'bg-opacity-100' : ['bg-opacity-25', 'hover:bg-opacity-75']
     },
     setActiveItem(index) {
       index = Number(index)
@@ -176,6 +194,14 @@ export default {
       }
       if (oldIndex === this.activeIndex) {
         this.resetItemPosition(oldIndex)
+      }
+    },
+    handleIndicatorClick(index) {
+      this.activeIndex = index
+    },
+    handleIndicatorHover(index) {
+      if (index !== this.activeIndex) {
+        this.activeIndex = index
       }
     }
   }

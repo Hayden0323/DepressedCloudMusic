@@ -42,7 +42,7 @@ export default {
     },
     bannerItemClasses() {
       const classes = ['absolute', 'top-0', 'left-0', 'w-1/2', 'h-full', 'inline-block',
-        'overflow-hidden', 'transition-transform', 'ease-in-out', 'duration-500'
+        'overflow-hidden', 'transition-transform', 'ease-in-out', 'duration-500', 'cursor-pointer'
       ]
       let zIndex = 'z-0'
       if (this.active) {
@@ -58,9 +58,21 @@ export default {
     }
   },
 
+  created() {
+    this.$parent && this.$parent.updateItems()
+  },
+
+  destroyed() {
+    this.$parent && this.$parent.updateItems()
+  },
+
   methods: {
     handleItemClick() {
-
+      const parent = this.$parent
+      if (parent) {
+        const index = parent.children.indexOf(this)
+        parent.setActiveItem(index)
+      }
     },
     processIndex(index, activeIndex, length) {
       if (activeIndex === 0 && index === length - 1) {
@@ -105,7 +117,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>
