@@ -1,6 +1,7 @@
 import ResizeObserver from 'resize-observer-polyfill'
+import { throttle } from 'throttle-debounce'
 
-const resizeHandler = function(entries) {
+const resizeHandler = throttle(300, entries => {
   for (const entry of entries) {
     const listeners = entry.target.__resizeListeners__ || []
     if (listeners.length) {
@@ -9,7 +10,7 @@ const resizeHandler = function(entries) {
       })
     }
   }
-}
+})
 
 export const addResizeListener = function(element, fn) {
   if (!element.__resizeListeners__) {
