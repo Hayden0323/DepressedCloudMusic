@@ -42,7 +42,7 @@ export default {
     },
     bannerItemClasses() {
       const classes = ['absolute', 'top-0', 'left-0', 'w-1/2', 'h-full', 'inline-block',
-        'overflow-hidden', 'transition-transform', 'ease-in-out', 'duration-500', 'cursor-pointer'
+        'overflow-hidden', 'transition-all', 'ease-in-out', 'duration-300', 'cursor-pointer'
       ]
       let zIndex = 'z-0'
       if (this.active) {
