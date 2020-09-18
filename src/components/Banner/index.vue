@@ -57,6 +57,7 @@
 <script>
 import { throttle } from 'throttle-debounce'
 import { getBanner } from '@/api/banner'
+import { addResizeListener, removeResizeListener } from '@/utils/resize-event'
 import Item from './item'
 
 export default {
@@ -126,6 +127,7 @@ export default {
 
   mounted() {
     this.$nextTick(() => {
+      addResizeListener(this.$el, this.resetItemPosition)
       if (this.initialIndex < this.items.length && this.initialIndex >= 0) {
         this.activeIndex = this.initialIndex
       }
@@ -134,6 +136,7 @@ export default {
   },
 
   beforeDestroy() {
+    if (this.$el) removeResizeListener(this.$el, this.resetItemPosition)
     this.pauseTimer()
   },
 
