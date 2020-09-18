@@ -1,175 +1,197 @@
 <template>
-  <div class="banner-container w-screen">
-    <div class="slider relative my-0 mx-auto flex justify-start">
-      <ul
-        class="absolute p-0 flex"
-        :style="{ width: `${slider.length * 800}px` }"
-      >
-        <li
-          v-for="(item, index) in slider"
-          ref="imgs"
-          :key="index"
-          :style="{
-            transform: `translate3d(-${imgIndex * 100}%, 0, 0)`
-          }"
-          :class="[isAnimating ? 'transition duration-500 ease-linear' : null]"
+  <div
+    class="banner relative overflow-x-hidden w-3/4 mx-auto"
+    @mouseenter.stop="handleMouseEnter"
+    @mouseleave.stop="handleMouseLeave"
+  >
+    <div class="banner__container relative" :style="{height: '300px'}">
+      <transition name="banner-arrow-left">
+        <button
+          v-show="hover && (loop || activeIndex > 0)"
+          type="button"
+          class="left-4"
+          :class="bannerArrowClasses"
+          @click.stop="throttledArrowClick(activeIndex - 1)"
         >
-          <img
-            :src="item.imageUrl ? item.imageUrl : ''"
-            :class="[
-              'current',
-              'rounded',
-              'shadow-xl',
-              isAnimating ? 'transition duration-500 ease-linear' : null
-            ]"
-            :style="[imgStyle(index)]"
-          >
-        </li>
-      </ul>
-    </div>
-    <div
-      class="pointer flex justify-center text-2xl leading-7 cursor-pointer transform -translate-y-8 h-0"
-    >
-      <li
-        v-for="index in pointers"
+          <i class="fa fa-chevron-left cursor-pointer" />
+        </button>
+      </transition>
+      <transition name="banner-arrow-right">
+        <button
+          v-show="hover && (loop || activeIndex < items.length - 1)"
+          type="button"
+          class="right-4"
+          :class="bannerArrowClasses"
+          @click.stop="throttledArrowClick(activeIndex + 1)"
+        >
+          <i class="fa fa-chevron-right cursor-pointer" />
+        </button>
+      </transition>
+      <item
+        v-for="(item, index) in items"
         :key="index"
-        :style="{ color: index === imgIndex ? 'orange' : null }"
-        @click="pointerClick(index)"
+        :url="item.imageUrl"
+        class="h-full"
       />
     </div>
   </div>
 </template>
 
 <script>
+import { throttle } from 'throttle-debounce'
 import { getBanner } from '@/api/banner'
+import Item from './item'
 
 export default {
   name: 'Banner',
-  data() {
-    return {
-      slider: [],
-      pointers: [],
-      imgIndex: 2,
-      interval: null,
-      isAnimating: true
+
+  components: {
+    Item
+  },
+
+  props: {
+    initialIndex: {
+      type: Number,
+      default: 0
+    },
+    loop: {
+      type: Boolean,
+      default: true
+    },
+    interval: {
+      type: Number,
+      default: 3000
     }
   },
+
+  data() {
+    return {
+      items: [],
+      hover: false,
+      activeIndex: -1,
+      timer: null,
+      children: []
+    }
+  },
+
+  computed: {
+    bannerArrowClasses() {
+      const classes = [
+        'h-8', 'w-8', 'z-20', 'outline-none', 'cursor-pointer', 'absolute', 'top-1/2', 'transform',
+        'bg-gray-300', '-translate-y-1/2', 'text-center', 'rounded-full', 'transition', 'duration-300',
+        'text-white', 'bg-opacity-25', 'hover:bg-opacity-100'
+      ]
+      return classes
+    }
+  },
+
+  watch: {
+    items(val) {
+      if (val.length > 0) this.setActiveItem(this.initialIndex)
+    },
+    activeIndex(val, oldVal) {
+      console.log(1)
+      this.resetItemPosition(oldVal)
+    },
+    loop() {
+      this.setActiveItem(this.activeIndex)
+    }
+  },
+
   created() {
-    this.getBanner()
+    this.getItems()
+    this.throttledArrowClick = throttle(300, true, index => {
+      this.setActiveItem(index)
+    })
   },
+
+  mounted() {
+    this.$nextTick(() => {
+      if (this.initialIndex < this.items.length && this.initialIndex >= 0) {
+        this.activeIndex = this.initialIndex
+      }
+      this.startTimer()
+    })
+  },
+
   beforeDestroy() {
-    clearInterval(this.interval)
+    this.pauseTimer()
   },
+
   methods: {
-    getBanner() {
+    getItems() {
       getBanner().then(res => {
-        this.init(res)
+        this.items = res.banners
+        this.updateItems()
       })
     },
-    handlePrev() {
-      this.resetInterval()
-      if (this.imgIndex === 0) {
-        this.imgIndex = this.slider.length - 2
-      } else {
-        this.imgIndex--
+    updateItems() {
+      // this.children = this.$children.filter(child => child.$options.name === 'BannerItem')
+      this.children = this.$children
+      console.log(this.children)
+    },
+    playSlides() {
+      if (this.activeIndex < this.items.length - 1) {
+        this.activeIndex++
+      } else if (this.loop) {
+        this.activeIndex = 0
       }
     },
-    handleNext() {
-      this.resetInterval()
-      if (this.imgIndex === this.slider.length - 1) {
-        this.imgIndex = 1
-      } else {
-        this.imgIndex++
+    startTimer() {
+      if (this.interval <= 0 || this.timer) return
+      this.timer = setInterval(this.playSlides, this.interval)
+    },
+    pauseTimer() {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
       }
     },
-    resetInterval() {
-      clearInterval(this.interval)
-      this.interval = setInterval(() => {
-        this.handleNext()
-      }, 5000)
+    handleMouseEnter() {
+      this.hover = true
+      this.pauseTimer()
     },
-    pointerClick(index) {
-      this.resetInterval()
-      this.imgIndex = index
+    handleMouseLeave() {
+      this.hover = false
+      this.startTimer()
     },
-    imgStyle(index) {
-      let rotate = 'rotateY(0deg)'
-      let scale = 'scale3d(1, 1, 1)'
-
-      if (index < this.imgIndex) {
-        rotate = 'rotateY(-4deg)'
-        scale = 'scale3d(0.85, 0.85, 1)'
-      }
-      if (index > this.imgIndex) {
-        rotate = 'rotateY(4deg)'
-        scale = 'scale3d(0.85, 0.85, 1)'
-      }
-      return {
-        zIndex: index === this.imgIndex ? 2 : 1,
-        transform: `${rotate} ${scale}`
-      }
-    },
-    init(res) {
-      const banners = [...res.banners]
-      const len = banners.length
-
-      for (let i = 0; i < len; i++) {
-        this.pointers.push(i + 2)
-      }
-
-      const prevImgs = [banners[0], banners[1]]
-      const lastImgs = [banners[len - 2], banners[len - 1]]
-
-      this.slider = lastImgs.concat(...res.banners).concat(prevImgs)
-      this.resetInterval()
-
-      this.$nextTick(() => {
-        this.$refs.imgs.forEach(img => {
-          img.addEventListener('transitionend', () => {
-            if (this.imgIndex === this.slider.length - 2) {
-              this.isAnimating = false
-              this.imgIndex = 2
-
-              setTimeout(() => {
-                this.isAnimating = true
-              }, 0)
-            } else if (this.imgIndex === 1) {
-              this.isAnimating = false
-              this.imgIndex = this.slider.length - 3
-
-              setTimeout(() => {
-                this.isAnimating = true
-              }, 0)
-            }
-          })
-        })
+    resetItemPosition(oldIndex) {
+      const len = this.children.length
+      console.log(len)
+      this.children.forEach((item, index) => {
+        item.translateItem(index, this.activeIndex, oldIndex)
       })
+    },
+    setActiveItem(index) {
+      index = Number(index)
+      if (isNaN(index) || index !== Math.floor(index)) return
+      const length = this.items.length
+      const oldIndex = this.activeIndex
+      if (index < 0) {
+        this.activeIndex = this.loop ? length - 1 : 0
+      } else if (index >= length) {
+        this.activeIndex = this.loop ? 0 : length - 1
+      } else {
+        this.activeIndex = index
+      }
+      if (oldIndex === this.activeIndex) {
+        this.resetItemPosition(oldIndex)
+      }
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.slider {
-  width: 800px;
-  height: 300px;
-  ul {
-    li {
-      perspective: 200;
-      -webkit-perspective: 200;
-    }
-    .current {
-      width: 800px;
-      height: 300px;
-    }
-  }
+.banner-arrow-left-enter,
+.banner-arrow-left-leave-active {
+  transform: translateY(-50%) translateX(-10px);
+  opacity: 0;
 }
-.pointer {
-  color: gray;
-  li {
-    &:hover {
-      color: orange;
-    }
-  }
+
+.banner-arrow-right-enter,
+.banner-arrow-right-leave-active {
+  transform: translateY(-50%) translateX(10px);
+  opacity: 0;
 }
 </style>

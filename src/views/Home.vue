@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="@/assets/logo.png" class="mx-auto" />
+    <img alt="Vue logo" src="@/assets/logo.png" class="mx-auto">
     <HelloWorld msg="Welcome to Your Vue.js App And Test Lint-staged" />
   </div>
 </template>

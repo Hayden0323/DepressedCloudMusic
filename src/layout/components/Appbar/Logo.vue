@@ -7,7 +7,7 @@
           :src="logo"
           class="appbar-logo h-8 w-8 mx-2"
           alt="CloudMusic Logo"
-        />
+        >
         <h1
           class="appbar-title text-2xl font-medium text-gray-300 tracking-widest"
         >
