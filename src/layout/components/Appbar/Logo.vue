@@ -23,6 +23,7 @@ import LogoImg from '@/assets/itunes.svg'
 
 export default {
   name: 'AppbarLogo',
+
   data() {
     return {
       title: '秃头云音乐',
