@@ -29,12 +29,7 @@
           <i class="fa fa-chevron-right cursor-pointer" />
         </button>
       </transition>
-      <item
-        v-for="(item, index) in items"
-        :key="index"
-        :url="item.imageUrl"
-        class="h-full"
-      />
+      <item v-for="(item, index) in items" :key="index" :url="item.imageUrl" class="h-full" />
     </div>
     <ul class="absolute z-20 bottom-0 left-1/2 transform -translate-x-1/2">
       <li
@@ -95,9 +90,23 @@ export default {
   computed: {
     bannerArrowClasses() {
       const classes = [
-        'h-8', 'w-8', 'z-20', 'cursor-pointer', 'absolute', 'top-1/2', 'transform',
-        'bg-gray-300', '-translate-y-1/2', 'text-center', 'rounded-full', 'transition', 'duration-300',
-        'text-white', 'bg-opacity-25', 'hover:bg-opacity-75', 'outline-none'
+        'h-8',
+        'w-8',
+        'z-20',
+        'cursor-pointer',
+        'absolute',
+        'top-1/2',
+        'transform',
+        'bg-gray-300',
+        '-translate-y-1/2',
+        'text-center',
+        'rounded-full',
+        'transition',
+        'duration-300',
+        'text-white',
+        'bg-opacity-25',
+        'hover:bg-opacity-75',
+        'outline-none'
       ]
       return classes
     }
@@ -148,7 +157,9 @@ export default {
       })
     },
     updateItems() {
-      this.children = this.$children.filter(child => child.$options.name === 'BannerItem')
+      this.children = this.$children.filter(
+        child => child.$options.name === 'BannerItem'
+      )
     },
     playSlides() {
       if (this.activeIndex < this.items.length - 1) {
@@ -181,7 +192,9 @@ export default {
       })
     },
     bannerButtonClasses(index) {
-      return index === this.activeIndex ? 'bg-opacity-100' : ['bg-opacity-25', 'hover:bg-opacity-75']
+      return index === this.activeIndex
+        ? 'bg-opacity-100'
+        : ['bg-opacity-25', 'hover:bg-opacity-75']
     },
     setActiveItem(index) {
       index = Number(index)

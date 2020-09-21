@@ -41,8 +41,18 @@ export default {
       return style
     },
     bannerItemClasses() {
-      const classes = ['absolute', 'top-0', 'left-0', 'w-1/2', 'h-full', 'inline-block',
-        'overflow-hidden', 'transition-all', 'ease-in-out', 'duration-300', 'cursor-pointer'
+      const classes = [
+        'absolute',
+        'top-0',
+        'left-0',
+        'w-1/2',
+        'h-full',
+        'inline-block',
+        'overflow-hidden',
+        'transition-all',
+        'ease-in-out',
+        'duration-300',
+        'cursor-pointer'
       ]
       let zIndex = 'z-0'
       if (this.active) {
@@ -89,11 +99,13 @@ export default {
     calcItemTranslate(index, activeIndex) {
       const parentWidth = this.$parent.$el.offsetWidth
       if (this.inStage) {
-        return parentWidth * ((2 - ITEM_SCALE) * (index - activeIndex) + 1) / 4
+        return (
+          (parentWidth * ((2 - ITEM_SCALE) * (index - activeIndex) + 1)) / 4
+        )
       } else if (index < activeIndex) {
-        return -(1 + ITEM_SCALE) * parentWidth / 4
+        return (-(1 + ITEM_SCALE) * parentWidth) / 4
       } else {
-        return (3 + ITEM_SCALE) * parentWidth / 4
+        return ((3 + ITEM_SCALE) * parentWidth) / 4
       }
     },
     calcTranslate(index, activeIndex) {
